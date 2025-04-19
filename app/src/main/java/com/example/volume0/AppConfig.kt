@@ -13,12 +13,12 @@ object AppConfigManager {
     private const val PREFS_NAME = "AppConfigPrefs"
     private const val KEY_ENABLED_PREFIX = "enabled_"
 
-    // List of supported apps, including Hulu
+    // List of supported apps,
     val supportedApps = listOf(
         AppConfig("SoundCloud", "com.soundcloud.android", true),
 //        AppConfig("YouTube", "com.google.android.apps.youtube.unplugged", true),
 //        AppConfig("YouTube TV", "com.google.android.youtube.tv", true),
-//        AppConfig("Spotify", "com.spotify.music", true),
+        AppConfig("Spotify", "com.spotify.music", true),
 //        AppConfig("Pandora", "com.pandora.android", true),
 //        AppConfig("Hulu", "com.hulu.plus", true)
     )

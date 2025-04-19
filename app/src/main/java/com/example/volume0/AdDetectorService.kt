@@ -47,8 +47,11 @@ class AdDetectorService : NotificationListenerService() {
         val notification = sbn.notification ?: return
         val extras = notification.extras
 
-        val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
-        val text = extras.getString(Notification.EXTRA_TEXT) ?: ""
+//        val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
+//        val text = extras.getString(Notification.EXTRA_TEXT) ?: ""
+        val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() ?: ""
+        val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
+
 
         Log.d(TAG, "[$packageName] Title: $title, Text: $text")
 
