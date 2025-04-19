@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Volume0</string>
+    <string name="grant_permission">Grant Notification Access</string>
+    <string name="permission_granted">Permission Granted</string>
+    <string name="waiting_for_notification">Waiting for media notification...</string>
+    <string name="select_apps">Select Apps to Monitor</string>
+</resources>
