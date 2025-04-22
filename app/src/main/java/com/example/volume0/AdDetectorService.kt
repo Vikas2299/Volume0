@@ -16,7 +16,7 @@ class AdDetectorService : NotificationListenerService() {
 
     private var originalVolume: Int? = null
     private lateinit var audioManager: AudioManager
-    private lateinit var enabledApps: Set<String>
+    private lateinit var enabledApps: Map<String, Int> // Map of packageName to adVolume
 
     private val toggleReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -39,28 +39,25 @@ class AdDetectorService : NotificationListenerService() {
         val packageName = sbn?.packageName ?: return
         Log.d(TAG, "Notification posted for: $packageName")
 
-        if (!enabledApps.contains(packageName)) {
+        if (!enabledApps.containsKey(packageName)) {
             Log.d(TAG, "Ignoring $packageName - Not enabled: $enabledApps")
             return
         }
 
         val notification = sbn.notification ?: return
         val extras = notification.extras
-
-//        val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
-//        val text = extras.getString(Notification.EXTRA_TEXT) ?: ""
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() ?: ""
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
-
 
         Log.d(TAG, "[$packageName] Title: $title, Text: $text")
 
         val status = classifyNotification(packageName, title, text)
         val isAd = status.contains("Ad")
-        adjustVolume(isAd)
+        adjustVolume(isAd, packageName)
 
         val intent = Intent("com.example.volume0.NOTIFICATION_UPDATE")
         intent.putExtra("status", status)
+        intent.putExtra("packageName", packageName)
         sendBroadcast(intent)
         Log.d(TAG, "Broadcasted status: $status")
     }
@@ -73,44 +70,52 @@ class AdDetectorService : NotificationListenerService() {
         }
 
         return when {
-            // Ad detection
             title.contains("Advertisement", ignoreCase = true) ||
                     title.contains("Sponsored", ignoreCase = true) ||
                     text.contains("Advertisement", ignoreCase = true) ||
                     text.contains("Sponsored", ignoreCase = true) ||
                     text.isEmpty() -> "Playing: Ad ($appName)"
-            // Content detection
-            title.isNotEmpty() && text.isNotEmpty() -> "Playing: $contentType ($appName)\nTitle: $title\nCreator: $text"
-            // Fallback
+            title.isNotEmpty() && text.isNotEmpty() -> "Playing: $contentType ($appName)\n$title\n$text"
             else -> "Playing: Unknown ($appName)"
         }
     }
 
-    private fun adjustVolume(isAd: Boolean) {
+    private fun adjustVolume(isAd: Boolean, packageName: String) {
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val adVolumePercent = enabledApps[packageName] ?: 50
+
+        Log.d(TAG, "Adjusting volume: isAd=$isAd, packageName=$packageName, adVolumePercent=$adVolumePercent, currentVolume=$currentVolume, maxVolume=$maxVolume")
 
         if (isAd) {
             if (originalVolume == null) {
                 originalVolume = currentVolume
                 Log.d(TAG, "Stored original volume: $originalVolume")
             }
-            val adVolume = 0
+            // Calculate the target volume based on the percentage
+            val adVolume = (maxVolume * adVolumePercent) / 100
+            Log.d(TAG, "Setting ad volume to $adVolume ($adVolumePercent% of max $maxVolume)")
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, adVolume, 0)
-            Log.d(TAG, "Lowered volume to $adVolume for ad")
         } else {
             originalVolume?.let { volume ->
+                Log.d(TAG, "Restoring volume to $volume")
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
-                Log.d(TAG, "Restored volume to $volume")
                 originalVolume = null
             }
         }
+
+        // Broadcast current volume
+        val currentVolumePercent = (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) * 100) / maxVolume
+        Log.d(TAG, "Broadcasting current volume: $currentVolumePercent%")
+        val intent = Intent("com.example.volume0.VOLUME_UPDATE")
+        intent.putExtra("volume", currentVolumePercent)
+        sendBroadcast(intent)
     }
 
     private fun updateEnabledApps() {
         enabledApps = AppConfigManager.getAppConfigs(this)
             .filter { it.isEnabled }
-            .map { it.packageName }
-            .toSet()
+            .associate { it.packageName to it.adVolume }
         Log.d(TAG, "Enabled apps updated: $enabledApps")
     }
 
