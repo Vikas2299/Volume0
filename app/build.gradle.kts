@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.volume0"
+    namespace = "com.volume0.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.volume0"
+        applicationId = "com.volume0.app"
         minSdk = 22
         targetSdk = 35
         versionCode = 1
@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.recyclerview:recyclerview:1.4.0")

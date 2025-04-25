@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.volume0">
+    package="com.volume0.app">
 
     <!-- Permission for notification listener -->
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +28,8 @@
             android:name=".AdDetectorService"
             android:label="Ad Detector Service"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="false">
+            android:exported="false"
+            android:foregroundServiceType="dataSync">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
