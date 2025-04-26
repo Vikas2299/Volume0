@@ -53,7 +53,7 @@
         android:id="@+id/volumeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Volume during ads:"
+        android:text="Volume during ads (0%)"
         android:textSize="14sp"
         android:textColor="#E0E0E0"
         android:fontFamily="sans-serif-light"

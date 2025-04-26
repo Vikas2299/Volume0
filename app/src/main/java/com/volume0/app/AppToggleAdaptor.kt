@@ -24,6 +24,7 @@ class AppToggleAdapter(
         val toggleSwitch: SwitchCompat = itemView.findViewById(R.id.toggleSwitch)
         val songInfoTextView: TextView = itemView.findViewById(R.id.songInfoTextView)
         val volumeSlider: SeekBar = itemView.findViewById(R.id.volumeSlider)
+        val volumeLabel : TextView = itemView.findViewById(R.id.volumeLabel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -34,8 +35,8 @@ class AppToggleAdapter(
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {
         val app = apps[position]
-//        holder.appNameTextView.text = app.name
-        holder.appNameTextView.text = "${app.name} (${app.adVolume}%)"
+        holder.appNameTextView.text = app.name
+//        holder.appNameTextView.text = "${app.name} (${app.adVolume}%)"
         when (app.packageName) {
             "com.spotify.music" -> holder.appIcon.setImageResource(R.drawable.spotify_logo)
             "com.soundcloud.android" -> holder.appIcon.setImageResource(R.drawable.soundcloud_logo)
@@ -44,7 +45,7 @@ class AppToggleAdapter(
         holder.volumeSlider.progress = app.adVolume
         holder.volumeSlider.isEnabled = app.isEnabled
         holder.songInfoTextView.text = songInfoMap[app.packageName] ?: "No song playing"
-//        holder.volumeLabelTextView.text = "Volume during ads (${app.adVolume}%):"
+        holder.volumeLabel.text = "Volume during ads (${app.adVolume}%)"
 
         holder.toggleSwitch.setOnCheckedChangeListener { _, isChecked ->
             onToggleChanged(app, isChecked)
@@ -56,7 +57,8 @@ class AppToggleAdapter(
                 if (fromUser) {
                     app.adVolume = progress
                     onVolumeChanged(app, progress)
-                    holder.appNameTextView.text = "${app.name} (${app.adVolume}%)"
+                    holder.volumeLabel.text = "Volume during ads (${app.adVolume}%)"
+//                    holder.appNameTextView.text = "${app.name} (${app.adVolume}%)"
                 }
             }
 

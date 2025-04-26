@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         })
 
         checkAndRequestPermission()
-//        requestBatteryOptimizationExemption()
     }
 
     private fun checkAndRequestPermission() {
@@ -87,23 +86,6 @@ class MainActivity : AppCompatActivity() {
         permissionDialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(0xFF000000.toInt())
     }
 
-//    private fun requestBatteryOptimizationExemption() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
-//            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-//                AlertDialog.Builder(this)
-//                    .setTitle("Disable Battery Optimization")
-//                    .setMessage("Volume0 needs to run in the background to detect songs and ads. Please disable battery optimization.")
-//                    .setPositiveButton("Go to Settings") { _, _ ->
-//                        val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-//                        intent.data = android.net.Uri.parse("package:$packageName")
-//                        startActivity(intent)
-//                    }
-//                    .setNegativeButton("Cancel", null)
-//                    .show()
-//            }
-//        }
-//    }
 
     private fun sendToggleUpdateBroadcast() {
         val intent = Intent("com.volume0.app.TOGGLE_UPDATE")
